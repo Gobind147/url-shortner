@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Shortener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+      padding: 10px;
+      width: 300px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .short-url {
+      margin-top: 20px;
+    }
+    .short-url a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>URL Shortener</h1>
+    <input type="text" id="longUrlInput" placeholder="Enter a long URL" />
+    <button id="submitBtn">Shorten URL</button>
+    <div class="short-url" id="shortUrlDisplay"></div>
+  </div>
+
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+  const longUrl = document.getElementById('longUrlInput').value;
+  const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+  
+  // Clear previous URL output
+  shortUrlDisplay.innerHTML = '';
+
+  if (!longUrl) {
+    alert('Please enter a URL');
+    return;
+  }
+
+  try {
+    // Send the long URL to the backend via POST request
+    const response = await fetch('/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url: longUrl })
+    });
+
+    // Parse the JSON response
+    const data = await response.json();
+
+    // If successful, display the full shortened URL
+    if (response.ok) {
+      shortUrlDisplay.innerHTML = `Shortened URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>`;
+    } else {
+      shortUrlDisplay.innerHTML = `Error: ${data.error}`;
+    }
+  } catch (err) {
+    shortUrlDisplay.innerHTML = `An error occurred: ${err.message}`;
+  }
+});
+
+  </script>
+
+</body>
+</html>
